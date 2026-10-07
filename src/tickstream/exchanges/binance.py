@@ -56,12 +56,26 @@ class BinanceClient(ExchangeClient):
 
         while not self._stopped:
             try:
-                async for trade in self._consume(url):
+                logger.info("binance.connecting", url=url)
+                async with websockets.connect(
+                    url, ping_interval=20, ping_timeout=20
+                ) as ws:
+                    logger.info("binance.connected")
                     attempt = 0
-                    yield trade
+                    async for raw in ws:
+                        if self._stopped:
+                            return
+                        trade = self._parse_message(raw)
+                        if trade is not None:
+                            yield trade
+                            if self._stopped:
+                                return
             except (TimeoutError, ConnectionClosed, OSError) as exc:
                 attempt += 1
-                delay = min(self._reconnect_base * (2 ** (attempt - 1)), self._reconnect_max)
+                delay = min(
+                    self._reconnect_base * (2 ** (attempt - 1)),
+                    self._reconnect_max,
+                )
                 logger.warning(
                     "binance.connection_lost",
                     attempt=attempt,
@@ -73,22 +87,9 @@ class BinanceClient(ExchangeClient):
     def _build_stream_url(self, symbols: list[str]) -> str:
         streams = "/".join(f"{s}@trade" for s in symbols)
         base = self._ws_base_url.rstrip("/")
-        # Combined stream endpoint is /stream?streams=...
-        # When base already ends with /ws we must upgrade to /stream.
         if base.endswith("/ws"):
             base = base[:-3]
         return f"{base}/stream?streams={streams}"
-
-    async def _consume(self, url: str) -> AsyncIterator[Trade]:
-        logger.info("binance.connecting", url=url)
-        async with websockets.connect(url, ping_interval=20, ping_timeout=20) as ws:
-            logger.info("binance.connected")
-            async for raw in ws:
-                if self._stopped:
-                    return
-                trade = self._parse_message(raw)
-                if trade is not None:
-                    yield trade
 
     def _parse_message(self, raw: str | bytes) -> Trade | None:
         """Parse a combined-stream message and return a Trade, or None on skip."""
