@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 
 from tickstream.schemas import Trade
 
@@ -27,7 +27,7 @@ class ExchangeClient(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def stream_trades(self, symbols: list[str]) -> AsyncIterator[Trade]:
+    def stream_trades(self, symbols: list[str]) -> AsyncGenerator[Trade, None]:
         """Yield validated trades for the given symbols.
 
         The returned async iterator must:

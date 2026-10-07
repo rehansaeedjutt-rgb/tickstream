@@ -1,0 +1,19 @@
+services:
+  tickstream:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tickstream:dev
+    container_name: tickstream
+    command: ["python", "-m", "tickstream", "demo", "--count", "5"]
+    environment:
+      TICKSTREAM_DEMO_SYMBOLS: "btcusdt,ethusdt"
+      TICKSTREAM_DEMO_COUNT: "5"
+      TICKSTREAM_DEMO_DB: "/data/tickstream.db"
+      TICKSTREAM_LOG_LEVEL: "INFO"
+    volumes:
+      - tickstream-data:/data
+    restart: "no"
+
+volumes:
+  tickstream-data:

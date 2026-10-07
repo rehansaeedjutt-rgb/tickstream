@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -44,7 +44,7 @@ class BinanceClient(ExchangeClient):
         """Signal the client to stop after the current message."""
         self._stopped = True
 
-    async def stream_trades(self, symbols: list[str]) -> AsyncIterator[Trade]:
+    async def stream_trades(self, symbols: list[str]) -> AsyncGenerator[Trade, None]:
         """Stream trades for the given symbols with automatic reconnection."""
         if not symbols:
             msg = "symbols must be a non-empty list"
