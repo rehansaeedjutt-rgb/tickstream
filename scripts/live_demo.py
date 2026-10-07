@@ -53,10 +53,7 @@ async def main() -> int:
         return 130
 
     print(f"\nDone. Printed {printed} trades.")
-    print(
-        f"Environment: {settings.environment.value}, "
-        f"log level: {settings.log_level.value}"
-    )
+    print(f"Environment: {settings.environment.value}, log level: {settings.log_level.value}")
     if settings.log_level is LogLevel.DEBUG:
         print("(DEBUG mode enabled)")
     return 0

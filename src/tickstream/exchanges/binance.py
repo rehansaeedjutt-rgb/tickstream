@@ -57,9 +57,7 @@ class BinanceClient(ExchangeClient):
         while not self._stopped:
             try:
                 logger.info("binance.connecting", url=url)
-                async with websockets.connect(
-                    url, ping_interval=20, ping_timeout=20
-                ) as ws:
+                async with websockets.connect(url, ping_interval=20, ping_timeout=20) as ws:
                     logger.info("binance.connected")
                     attempt = 0
                     async for raw in ws:
