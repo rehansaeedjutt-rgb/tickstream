@@ -1,0 +1,146 @@
+﻿# tickstream
+
+> A production-grade, real-time crypto market data engine.
+
+[![CI](https://github.com/rehansaeedjutt-rgb/tickstream/actions/workflows/ci.yml/badge.svg)](https://github.com/rehansaeedjutt-rgb/tickstream/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
+
+## Overview
+
+`tickstream` ingests real-time market data from major crypto exchanges via WebSocket
+and REST APIs, normalizes it into a unified schema, and persists it for downstream
+research, analytics, and risk systems.
+
+**Status:** In active development (Phase 1: Binance WebSocket ingestion).
+
+## Architecture
+
+> Architecture diagram will be added in `docs/images/architecture.png`.
+
+## Planned Features
+
+- [ ] Multi-exchange WebSocket ingestion (Binance, OKX, Bybit)
+- [ ] Unified schema across exchanges (trades, order book, funding, open interest)
+- [ ] Async reconnection with exponential backoff
+- [ ] PostgreSQL persistence layer
+- [ ] Structured logging (`structlog`)
+- [ ] Pydantic-validated messages
+- [ ] Prometheus-compatible metrics
+- [ ] Docker + docker-compose
+- [ ] GitHub Actions CI (lint, type-check, test)
+- [ ] >80% test coverage
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Language | Python 3.12+ |
+| Async I/O | `asyncio`, `aiohttp`, `websockets` |
+| Validation | `pydantic` |
+| Logging | `structlog` |
+| Storage | PostgreSQL (planned) |
+| Testing | `pytest`, `pytest-asyncio` |
+| Quality | `ruff`, `mypy` |
+| CI/CD | GitHub Actions |
+| Container | Docker |
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12 or newer
+- Git
+
+### Installation
+
+```bash
+git clone https://github.com/rehansaeedjutt-rgb/tickstream.git
+cd tickstream
+python -m venv .venv
+# Windows:
+.\.venv\Scripts\Activate.ps1
+# Linux/macOS:
+source .venv/bin/activate
+
+pip install -e ".[dev]"
+# --- Step 4C: pyproject.toml ---
+@'
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tickstream"
+version = "0.1.0"
+description = "A production-grade real-time crypto market data engine."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Muhammad Rehan Saeed" },
+]
+keywords = ["crypto", "market-data", "websocket", "real-time", "binance", "quantitative-finance"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "aiohttp>=3.14",
+    "websockets>=17.0",
+    "pydantic>=2.13",
+    "pydantic-settings>=2.15",
+    "structlog>=26.0",
+    "python-dotenv>=1.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pandas>=3.0",
+    "numpy>=2.5",
+    "pytest>=9.0",
+    "pytest-asyncio>=1.4",
+    "pytest-cov>=7.0",
+    "ruff>=0.16",
+    "mypy>=2.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/rehansaeedjutt-rgb/tickstream"
+Repository = "https://github.com/rehansaeedjutt-rgb/tickstream"
+Issues = "https://github.com/rehansaeedjutt-rgb/tickstream/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-ra --strict-markers --strict-config"
+
+[tool.coverage.run]
+source = ["src/tickstream"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
